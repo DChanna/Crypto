@@ -1,0 +1,209 @@
+{
+    "top-post": {
+      "id": 1234,
+      "url": "https://www.reddit.com/r/Bitcoin/comments/1gvr21h/bitcoin_flips_canadian_dollar_source/"
+    },
+    "totals": {
+      "news_count": 10,
+      "social_count": 240
+    },
+    "top-crypto": [
+      {
+        "crypto_id": 1234,
+        "crypto_name": "Bitcoin",
+        "symbol": "BTC",
+        "change": 2.76
+      },
+      {
+        "crypto_id": 1123,
+        "crypto_name": "Ethereum",
+        "symbol": "ETH",
+        "change": -1.43
+      },
+      {
+        "crypto_id": 2223,
+        "crypto_name": "Solana",
+        "symbol": "SOL",
+        "change": 0.67
+      }
+    ],
+    "social-mentions": [
+      {
+        "crypto_id": 1234,
+        "crypto_name": "Bitcoin",
+        "symbol": "BTC",
+        "mentions": [148, 239, 355, 422, 108, 342, 375]
+      },
+      {
+        "crypto_id": 1123,
+        "crypto_name": "Ethereum",
+        "symbol": "ETH",
+        "mentions": [182, 251, 160, 378, 203, 256, 129]
+      },
+      {
+        "crypto_id": 2223,
+        "crypto_name": "Solana",
+        "symbol": "SOL",
+        "mentions": [397, 630, 158, 473, 460, 695, 291]
+      }
+    ],
+    "news-count": [
+      {
+        "crypto_id": 1234,
+        "crypto_name": "Bitcoin",
+        "symbol": "BTC",
+        "news_count": 10
+      },
+      {
+        "crypto_id": 1123,
+        "crypto_name": "Ethereum",
+        "symbol": "ETH",
+        "news_count": 5
+      },
+      {
+        "crypto_id": 2223,
+        "crypto_name": "Solana",
+        "symbol": "SOL",
+        "news_count": 12
+      }
+    ],
+    "media-sentiments": [
+      {
+        "crypto_id": 1234,
+        "crypto_name": "Bitcoin",
+        "symbol": "BTC",
+        "positive_news_sentiment_count": 3,
+        "negative_news_sentiment_count": 10,
+        "positive_social_sentiment_count": 630,
+        "negative_social_sentiment_count": 200
+      },
+      {
+        "crypto_id": 1123,
+        "crypto_name": "Ethereum",
+        "symbol": "ETH",
+        "positive_news_sentiment_count": 10,
+        "negative_news_sentiment_count": 4,
+        "positive_social_sentiment_count": 750,
+        "negative_social_sentiment_count": 300
+      },
+      {
+        "crypto_id": 2223,
+        "crypto_name": "Solana",
+        "symbol": "SOL",
+        "positive_news_sentiment_count": 2,
+        "negative_news_sentiment_count": 4,
+        "positive_social_sentiment_count": 240,
+        "negative_social_sentiment_count": 200
+      }
+    ],
+    "summary-data": [
+      {
+        "crypto_id": 1234,
+        "crypto_name": "Bitcoin",
+        "symbol": "BTC",
+        "social_count": 480,
+        "news_count": 10,
+        "news_sentiment_score": 1,
+        "social_sentiment_score": 1
+      },
+      {
+        "crypto_id": 1123,
+        "crypto_name": "Ethereum",
+        "symbol": "ETH",
+        "social_count": 200,
+        "news_count": 7,
+        "news_sentiment_score": 0,
+        "social_sentiment_score": 0
+      },
+      {
+        "crypto_id": 2223,
+        "crypto_name": "Solana",
+        "symbol": "SOL",
+        "social_count": 310,
+        "news_count": 12,
+        "news_sentiment_score": 0,
+        "social_sentiment_score": 1
+      },
+      {
+        "crypto_id": 1234,
+        "crypto_name": "Bitcoin",
+        "symbol": "BTC",
+        "social_count": 480,
+        "news_count": 10,
+        "news_sentiment_score": 1,
+        "social_sentiment_score": 1
+      },
+      {
+        "crypto_id": 1123,
+        "crypto_name": "Ethereum",
+        "symbol": "ETH",
+        "social_count": 200,
+        "news_count": 7,
+        "news_sentiment_score": 0,
+        "social_sentiment_score": 0
+      },
+      {
+        "crypto_id": 2223,
+        "crypto_name": "Solana",
+        "symbol": "SOL",
+        "social_count": 310,
+        "news_count": 12,
+        "news_sentiment_score": 0,
+        "social_sentiment_score": 1
+      },
+      {
+        "crypto_id": 1234,
+        "crypto_name": "Bitcoin",
+        "symbol": "BTC",
+        "social_count": 480,
+        "news_count": 10,
+        "news_sentiment_score": 1,
+        "social_sentiment_score": 1
+      },
+      {
+        "crypto_id": 1123,
+        "crypto_name": "Ethereum",
+        "symbol": "ETH",
+        "social_count": 200,
+        "news_count": 7,
+        "news_sentiment_score": 0,
+        "social_sentiment_score": 0
+      },
+      {
+        "crypto_id": 2223,
+        "crypto_name": "Solana",
+        "symbol": "SOL",
+        "social_count": 310,
+        "news_count": 12,
+        "news_sentiment_score": 0,
+        "social_sentiment_score": 1
+      },
+      {
+        "crypto_id": 1234,
+        "crypto_name": "Bitcoin",
+        "symbol": "BTC",
+        "social_count": 480,
+        "news_count": 10,
+        "news_sentiment_score": 1,
+        "social_sentiment_score": 1
+      },
+      {
+        "crypto_id": 1123,
+        "crypto_name": "Ethereum",
+        "symbol": "ETH",
+        "social_count": 200,
+        "news_count": 7,
+        "news_sentiment_score": 0,
+        "social_sentiment_score": 0
+      },
+      {
+        "crypto_id": 2223,
+        "crypto_name": "Solana",
+        "symbol": "SOL",
+        "social_count": 310,
+        "news_count": 12,
+        "news_sentiment_score": 0,
+        "social_sentiment_score": 1
+      }
+    ]
+  }  

@@ -1,0 +1,41 @@
+.news-component {
+  border: 1px solid #cbd5e0;
+  border-radius: 8px;
+  background-color: #ffffff;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 16px;
+  width: 100%;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.text-label {
+  font-family: "Montserrat", sans-serif;
+  font-size: 20px;
+  font-weight: 500;
+  color: #1a202c;
+  margin-bottom: 10px;
+}
+
+#chart {
+  width: 100%;
+  max-width: 300px;
+}
+
+@media (max-width: 768px) {
+  #chart {
+    max-width: 250px;
+  }
+}
+
+@media (max-width: 480px) {
+  #chart {
+    max-width: 200px;
+  }
+
+  .text-label {
+    font-size: 16px;
+  }
+}
