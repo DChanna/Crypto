@@ -81,7 +81,7 @@ services:
     build:
       context: ./Crypto-Frontend
       args:
-        - REACT_APP_API_URL=http://crypto_backend:8004/api
+        - REACT_APP_API_URL=http://localhost:8004/api
     container_name: crypto_frontend
     restart: always
     ports:
