@@ -132,7 +132,7 @@ def main():
         message_handlers = handlers.factory
 
         poller = KafkaPoller(
-            bootstrap_servers="kafka:9093",
+            bootstrap_servers="kafka:29092",
             topics=topics,
             group_id="my-consumer-group",
             message_handlers=message_handlers,

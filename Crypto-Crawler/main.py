@@ -16,7 +16,7 @@ if sys.version_info >= (3, 12, 0):
 
 
 # Kafka Connection Settings
-BOOTSTRAP_SERVERS = ["kafka:9093"]
+BOOTSTRAP_SERVERS = ["kafka:29092"]
 
 # def create_kafka_producer():
 #     print("Creating Kafka producer...")
@@ -193,14 +193,20 @@ def main():
 
                 try:
                     response = http.request("GET", fullURL)
+                    print(response.data)
                     data = json.loads(response.data.decode('utf-8'))
                     data['currency'] = currency['id']
-                    producer.send(source["name"], value=data)
-                    producer.flush()  # Ensure message is sent
+                    future = producer.send(source["name"], value=data)
+                    # if future.succeeded():
+                    result = future.get(timeout=100)
+                    print(f"Message sent successfully to topic {result.topic}, partition {result.partition}, offset {result.offset}")
+                    producer.flush()
                     print(f"Published {currency['name']} data to {source['name']} topic")
                 except Exception as e:
                     print(f"Error processing {currency['name']} from {source['name']}: {e}")
                     continue  # Skip to next currency instead of exiting
+                finally:
+                    print("moving on time now = ", time.time())
 
                 time.sleep(1)  # Rate limiting
     finally:

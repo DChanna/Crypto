@@ -8,7 +8,8 @@ app = FastAPI(lifespan=lifespan)
 # Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3003"],  # Update this to match your frontend URL - **EDIT**
+    # allows all origins
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],  
     allow_headers=["*"],  

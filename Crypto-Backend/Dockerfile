@@ -9,9 +9,4 @@ COPY . /app
 COPY ./requirements.txt /app
 RUN pip install -r requirements.txt
 
-# Copy the wait-for-crawler.sh script and make it executable
-COPY ./wait-for-crawler.sh /usr/local/bin/
-RUN chmod +x /usr/local/bin/wait-for-crawler.sh
-
-# Use wait script to delay backend start until crawler completes
-CMD ["sh", "-c", "wait-for-crawler.sh /tmp/crawler_done && uvicorn main:app --host 0.0.0.0 --port 8004"]
+CMD ["sh", "-c", "uvicorn main:app --host 127.0.0.1 --port 8004"]

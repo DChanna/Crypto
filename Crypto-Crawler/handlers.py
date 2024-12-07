@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from datetime import datetime, timedelta
+from random import random
 from typing import Optional
 
 import psycopg2
@@ -18,12 +19,13 @@ from psycopg2.extras import RealDictCursor
 #     password: str = "testpass"
 
 @dataclass
-    class DBConfig:
-        host: str = "postgres"  
-        port: int = 5432 
-        database: str = "crypto_news"
-        user: str = "postgres"
-        password: str = "testpass"
+class DBConfig:
+    host: str = "postgres"
+    port: int = 5432
+    database: str = "crypto_news"
+    user: str = "postgres"
+    password: str = "testpass"
+
 
 class Database:
     def __init__(self, config: DBConfig):
@@ -39,7 +41,7 @@ class Database:
             user=self.config.user,
             password=self.config.password
         )
-    
+
     def rollback(self):
         self.conn.rollback()
 
@@ -81,17 +83,17 @@ class Database:
         self.conn.commit()
 
 
-class SentimentAnalyzer:
-    def __init__(self):
-        self.analyzer = SentimentIntensityAnalyzer()
-
-    def analyze(self, text: str) -> float:
-        return self.analyzer.polarity_scores(text)['compound']
+# class SentimentAnalyzer:
+#     def __init__(self):
+#         self.analyzer = SentimentIntensityAnalyzer()
+#
+#     def analyze(self, text: str) -> float:
+#         return self.analyzer.polarity_scores(text)['compound']
 
 
 class MessageHandler(ABC):
     def __init__(self, db: Database):
-        self.sentiment = SentimentAnalyzer()
+        # self.sentiment = SentimentAnalyzer()
         self.db = db
 
     @abstractmethod
@@ -111,7 +113,7 @@ class NYTHandler(MessageHandler):
                         'url': article.get('web_url'),
                         'headline': article.get('headline', {}).get('main'),
                         'content': article.get('lead_paragraph'),
-                        'sentiment_score': self.sentiment.analyze(article.get('headline', {}).get('main', '')),
+                        'sentiment_score': 0,
                         'author': article.get('byline', {}).get('original'),
                         'published_date': article.get('pub_date')
                     }
@@ -121,8 +123,8 @@ class NYTHandler(MessageHandler):
             self.db.rollback()
 
     # def _detect_crypto(self, article):
-        # # Simple detection - would need to be more sophisticated in production
-        # return 1  # Default to Bitcoin for example
+    # # Simple detection - would need to be more sophisticated in production
+    # return 1  # Default to Bitcoin for example
 
 
 class GuardianHandler(MessageHandler):
@@ -137,7 +139,7 @@ class GuardianHandler(MessageHandler):
                         'url': article.get('webUrl'),
                         'headline': article.get('webTitle'),
                         'content': article.get('fields', {}).get('bodyText'),
-                        'sentiment_score': self.sentiment.analyze(article.get('webTitle', '')),
+                        'sentiment_score': 0,
                         'author': article.get('fields', {}).get('byline'),
                         'published_date': article.get('webPublicationDate')
                     }
@@ -148,6 +150,7 @@ class GuardianHandler(MessageHandler):
 
     # def _detect_crypto(self, article):
     #     return 1  # Default to Bitcoin for example
+
 
 class RedditHandler(MessageHandler):
     def handle(self, message):
@@ -166,7 +169,7 @@ class RedditHandler(MessageHandler):
                         'content': fetched_data.get('selftext'),
                         'score': fetched_data.get('score'),
                         'comment_count': fetched_data.get('num_comments'),
-                        'sentiment_score': self.sentiment.analyze(fetched_data.get('title') + '. ' + fetched_data.get('selftext')),
+                        'sentiment_score': 0,
                         'is_post': True,
                         'author': fetched_data.get('author'),
                         'created_at': created_date.isoformat()
@@ -175,6 +178,7 @@ class RedditHandler(MessageHandler):
         except Exception as e:
             print(f"Error processing Reddit article: {e}")
             self.db.rollback()
+
 
 class MetricsCalculator:
     def __init__(self, db: Database):

@@ -2,12 +2,12 @@ from dataclasses import dataclass
 
 
 @dataclass
-    class DBConfig:
-        host: str = "postgres"  
-        port: int = 5432 
-        database: str = "crypto_news"
-        user: str = "postgres"
-        password: str = "testpass"
+class DBConfig:
+    host: str = "postgres"
+    port: int = 5432
+    database: str = "crypto_news"
+    user: str = "postgres"
+    password: str = "testpass"
 
 
 # database.py
