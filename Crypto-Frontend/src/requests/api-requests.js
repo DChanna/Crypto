@@ -1,7 +1,8 @@
 import axios from "axios";
 
 // export const api = "http://127.0.0.1:8000/api"; - backend local
-export const api = "http://127.0.0.1:8004/api"; // backend docker
+// export const api = "http://127.0.0.1:8004/api"; // backend docker
+export const api = process.env.REACT_APP_API_URL || "http://localhost:8004/api";
 
 
 export async function getNews() {

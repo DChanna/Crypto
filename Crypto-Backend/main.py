@@ -8,7 +8,7 @@ app = FastAPI(lifespan=lifespan)
 # Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3003"],  # Update this to match your frontend URL - **EDIT**
+    allow_origins=["*"], 
     allow_credentials=True,
     allow_methods=["*"],  
     allow_headers=["*"],  
@@ -23,3 +23,8 @@ app.include_router(social_mentions.router, prefix="")
 app.include_router(news_counts.router, prefix="")
 app.include_router(media_sentiments.router, prefix="")
 app.include_router(summary_data.router, prefix="")
+
+
+@app.get("/api/health")
+async def health_check():
+    return {"status": "healthy"}

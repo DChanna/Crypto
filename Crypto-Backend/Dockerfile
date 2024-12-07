@@ -1,17 +1,19 @@
-FROM python:3.13
+FROM python:3.11-slim
 
 WORKDIR /app
 
-# Copy backend files
-COPY . /app
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    gcc \
+    python3-dev \
+    && rm -rf /var/lib/apt/lists/*
 
-# Install dependencies
-COPY ./requirements.txt /app
-RUN pip install -r requirements.txt
+# Install Python packages
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the wait-for-crawler.sh script and make it executable
-COPY ./wait-for-crawler.sh /usr/local/bin/
-RUN chmod +x /usr/local/bin/wait-for-crawler.sh
+# Copy application
+COPY . .
 
-# Use wait script to delay backend start until crawler completes
-CMD ["sh", "-c", "wait-for-crawler.sh /tmp/crawler_done && uvicorn main:app --host 0.0.0.0 --port 8004"]
+EXPOSE 8004
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8004"]

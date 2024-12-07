@@ -56,8 +56,8 @@ services:
         sleep 3;
       done;
       python generateDB.py &&
+      python crypto-data-generator-2.py &&
       python main.py &&
-      python sentiment.py &&
       python poller.py
       "
     volumes:
@@ -71,20 +71,28 @@ services:
     depends_on:
       - crawler
     ports:
-      - "8004:8000"  # Expose backend on port 8004
+      - "8004:8004"
     environment:
-      DATABASE_URL: postgres://postgres:testpass@crypto_postgres:5432/crypto_news
+      DATABASE_URL: postgresql://postgres:testpass@crypto_postgres:5432/crypto_news
     volumes:
       - shared_data:/tmp
 
   frontend:
     build:
       context: ./Crypto-Frontend
+      args:
+        - REACT_APP_API_URL=http://crypto_backend:8004/api
     container_name: crypto_frontend
     restart: always
     ports:
-      - "3003:3000"  # Expose frontend on port 3003
+      - "3003:3000"
+    depends_on:
+      - backend
 
 volumes:
   postgres_data:
   shared_data:
+
+networks:
+  default:
+    name: crypto_network

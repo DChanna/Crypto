@@ -5,15 +5,6 @@ from dataclasses import dataclass
 import numpy as np
 import uuid
 
-"""
-Note to the grading team: 
-
-This script was generated using genAI for creating dummy data for the crypto_news database.
-We chose to do this because when you run the container, the database is empty and the application
-will not work accurately without data.
-
-"""
-
 def generate_sentiment(crypto_id, timestamp):
     hour = timestamp.hour
     is_market_hours = 8 <= hour <= 22
@@ -43,9 +34,47 @@ def insert_record(cursor, sql, data):
         cursor.execute(sql, data)
         return True
     except psycopg2.Error as e:
+        if "duplicate key value violates unique constraint" in str(e):
+            # Skip duplicates silently
+            return True
         print(f"Failed to insert record: {e}")
         print(f"Failed data: {data}")
+        cursor.execute("ROLLBACK TO SAVEPOINT record_insert")
         return False
+
+def create_data(db_config):
+    conn = psycopg2.connect(
+        host=db_config.host,
+        port=db_config.port,
+        database="crypto_news",
+        user=db_config.user,
+        password=db_config.password
+    )
+
+    try:
+        cur = conn.cursor()
+        # Start a transaction
+        cur.execute("BEGIN")
+        
+        # ... rest of your code ...
+
+        for crypto_id in [1, 2, 3]:
+            # Create a savepoint before each batch of inserts
+            cur.execute("SAVEPOINT record_insert")
+            
+            # Your existing insert code...
+            
+            # If successful, release the savepoint
+            cur.execute("RELEASE SAVEPOINT record_insert")
+
+        # Commit at the end of each hour
+        conn.commit()
+        
+    except Exception as e:
+        print(f"Error creating sample data: {e}")
+        conn.rollback()
+    finally:
+        conn.close()
 
 def create_data(db_config):
     conn = psycopg2.connect(
