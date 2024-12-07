@@ -8,14 +8,22 @@ from nltk.sentiment import SentimentIntensityAnalyzer
 from psycopg2.extras import RealDictCursor
 
 
+# @dataclass
+# class DBConfig:
+#     # Values for port, user, and password need to be personalized - **EDIT**
+#     host: str = "localhost"
+#     port: int = 5431
+#     database: str = "crypto_news"
+#     user: str = "postgres"
+#     password: str = "testpass"
+
 @dataclass
-class DBConfig:
-    # Values for port, user, and password need to be personalized - **EDIT**
-    host: str = "localhost"
-    port: int = 5431
-    database: str = "crypto_news"
-    user: str = "postgres"
-    password: str = "testpass"
+    class DBConfig:
+        host: str = "postgres"  
+        port: int = 5432 
+        database: str = "crypto_news"
+        user: str = "postgres"
+        password: str = "testpass"
 
 class Database:
     def __init__(self, config: DBConfig):

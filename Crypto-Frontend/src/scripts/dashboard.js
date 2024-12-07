@@ -40,7 +40,7 @@ function Dashboard() {
       <Grid container spacing={2} sx={{ height: "100%", width: "100%", p: 4 }}>
         <Grid item xs={12}>
           <Typography variant="h4" sx={{ mb: 2 }}>
-            Trending Today:
+            Trending Crypto:
           </Typography>
         </Grid>
 

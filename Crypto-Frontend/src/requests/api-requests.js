@@ -1,6 +1,8 @@
 import axios from "axios";
 
-export const api = "http://127.0.0.1:8000/api";
+// export const api = "http://127.0.0.1:8000/api"; - backend local
+export const api = "http://127.0.0.1:8004/api"; // backend docker
+
 
 export async function getNews() {
   try {
@@ -125,17 +127,29 @@ export const getTopTrendingCrypto = async () => {
       }
     });
 
+    // newsCount.forEach((crypto) => {
+    //   const newsCountValue = crypto.news_count || 0;
+    //   if (newsCountValue > maxNewsCount) {
+    //     maxNewsCount = newsCountValue;
+    //     topNews = {
+    //       name: crypto.crypto_name,
+    //       symbol: crypto.symbol,
+    //       count: newsCountValue,
+    //     };
+    //   }
+    // });
+
     newsCount.forEach((crypto) => {
-      const newsCountValue = crypto.news_count || 0;
-      if (newsCountValue > maxNewsCount) {
-        maxNewsCount = newsCountValue;
+      if (crypto.news_count > maxNewsCount) {
+        maxNewsCount = crypto.news_count;
         topNews = {
           name: crypto.crypto_name,
           symbol: crypto.symbol,
-          count: newsCountValue,
+          newsCount: crypto.news_count, 
         };
       }
     });
+    
 
     return { topSocial, topNews };
   } catch (err) {

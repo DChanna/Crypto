@@ -4,7 +4,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 
 # Values "postgres:testpass" (username:password) and "localhost:5431" need to be personalized - **EDIT**
-DATABASE_URL = "postgresql+asyncpg://postgres:testpass@0.0.0.0:5431/crypto_news"
+DATABASE_URL = "postgresql+asyncpg://postgres:testpass@localhost:5431/crypto_news"
 
 # SQLAlchemy async engine
 engine = create_async_engine(DATABASE_URL, echo=True)

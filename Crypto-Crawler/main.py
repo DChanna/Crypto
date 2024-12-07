@@ -9,45 +9,18 @@ from kafka.errors import TopicAlreadyExistsError
 import kafka
 import six
 
-# Paths to ALL Kafka related entities need to be personalized - **EDIT**
-KAFKA_PATH = "/Users/dchanna/Downloads/kafka_2.13-3.9.0/bin/kafka-server-start.sh"
-CONFIG_PATH = "/Users/dchanna/Downloads/kafka_2.13-3.9.0/config/server.properties"
-ZOOKEEPER_PATH = "/Users/dchanna/Downloads/kafka_2.13-3.9.0/bin/zookeeper-server-start.sh"
-ZOOKEEPER_CONFIG = "/Users/dchanna/Downloads/kafka_2.13-3.9.0/config/zookeeper.properties"
+import json
+import time
+from urllib3 import PoolManager
+from urllib.parse import urlencode
+from kafka import KafkaProducer, KafkaAdminClient
+from kafka.admin import NewTopic
+from kafka.errors import TopicAlreadyExistsError, KafkaError
 
-BOOTSTRAP_SERVERS = ["localhost:9092"]
+# Kafka Connection Settings
+BOOTSTRAP_SERVERS = ["kafka:9093"]
 
-
-def startKafka():
-    print("Starting Zookeeper server...")
-    try:
-        zookeeper = subprocess.Popen(
-            [ZOOKEEPER_PATH, ZOOKEEPER_CONFIG],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE
-        )
-        time.sleep(10)  # Wait for Zookeeper to start
-        print("...Zookeeper server started")
-    except Exception as e:
-        print(f"Error starting Zookeeper server: {e}")
-        exit(1)
-
-    print("Starting Kafka server...")
-    try:
-        kafka = subprocess.Popen(
-            [KAFKA_PATH, CONFIG_PATH],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE
-        )
-        time.sleep(10)  # Wait for Kafka to start
-        print("...Kafka server started")
-        return kafka
-    except Exception as e:
-        print(f"Error starting Kafka server: {e}")
-        exit(1)
-
-
-def createKafkaProducer():
+def create_kafka_producer():
     print("Creating Kafka producer...")
     retries = 3
     while retries > 0:
@@ -61,29 +34,26 @@ def createKafkaProducer():
             )
             print("...Kafka producer created")
             return producer
-        except Exception as e:
+        except KafkaError as e:
             print(f"Error creating Kafka producer: {e}")
             retries -= 1
             time.sleep(5)
     print("Failed to create Kafka producer")
     exit(1)
 
-
-def createKafkaTopics(sources):
-    admin_client = KafkaAdminClient(bootstrap_servers='localhost:9092')
-    topics = []
-    for s in sources:
-        topics.append(NewTopic(name=s["name"], num_partitions=1, replication_factor=1))
+def create_kafka_topics(sources):
+    print("Creating Kafka topics...")
+    admin_client = KafkaAdminClient(bootstrap_servers=BOOTSTRAP_SERVERS)
+    topics = [NewTopic(name=s["name"], num_partitions=1, replication_factor=1) for s in sources]
 
     try:
         admin_client.create_topics(new_topics=topics, validate_only=False)
-        print("Topics created")
+        print("Topics created successfully.")
     except TopicAlreadyExistsError:
-        print("Topics already exist, moving on")
-    except Exception as e:
-        print(f"Error creating topics: {e}")
+        print("Topics already exist, skipping creation.")
+    except KafkaError as e:
+        print(f"Error creating Kafka topics: {e}")
         exit(1)
-
 
 def main():
     # Read configuration files
@@ -94,23 +64,9 @@ def main():
         print(f"Error reading configuration files: {e}")
         exit(1)
 
-    # Start Kafka infrastructure
-    kafka = startKafka()
-    createKafkaTopics(sources)
-    producer = createKafkaProducer()
-
-    # List created topics
-    result = subprocess.run(
-        [KAFKA_PATH, "--list", "--bootstrap-server", "localhost:9092"],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        text=True
-    )
-    print("Available topics:", result.stdout)
-
-    # now run poller.py
-    # subprocess.run(["python", "poller.py"])
-
+    # Create Kafka topics and producer
+    create_kafka_topics(sources)
+    producer = create_kafka_producer()
 
     # Initialize HTTP client
     http = PoolManager()
@@ -123,10 +79,10 @@ def main():
                 print(f"Processing currency: {currency['name']}")
                 base_url = source["url"]
                 params = {"q": currency["name"]}
-                fullURL = base_url + "&" + urlencode(params)
+                full_url = base_url + "&" + urlencode(params)
 
                 try:
-                    response = http.request("GET", fullURL)
+                    response = http.request("GET", full_url)
                     data = json.loads(response.data.decode('utf-8'))
                     data['currency'] = currency['id']
                     producer.send(source["name"], value=data)
@@ -139,7 +95,7 @@ def main():
                 time.sleep(1)  # Rate limiting
     finally:
         producer.close()
-        kafka.terminate()
+
 
 
 if __name__ == "__main__":

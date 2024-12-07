@@ -61,11 +61,11 @@ async def get_summary_data(db: AsyncSession = Depends(get_db)):
             case(
                 (func.avg(SocialMention.sentiment_score) >= 0, 1),
                 (func.avg(SocialMention.sentiment_score) < 0, 0),
-            ).label("social_sentiment_score"),  # Binary transformation after average
+            ).label("social_sentiment_score"),  
             case(
                 (func.avg(NewsMention.sentiment_score) >= 0, 1),
                 (func.avg(NewsMention.sentiment_score) < 0, 0),
-            ).label("news_sentiment_score"),  # Binary transformation after average
+            ).label("news_sentiment_score"),  
         )
         .outerjoin(SocialMention, Cryptocurrency.crypto_id == SocialMention.crypto_id)
         .outerjoin(NewsMention, Cryptocurrency.crypto_id == NewsMention.crypto_id)
@@ -80,7 +80,6 @@ async def get_summary_data(db: AsyncSession = Depends(get_db)):
     if not rows:
         raise HTTPException(status_code=404, detail="No summary data found")
 
-    # Format the rows into the Pydantic response model
     return [
         {
             "crypto_id": row.crypto_id,

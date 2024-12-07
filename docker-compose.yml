@@ -1,0 +1,88 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: crypto_postgres
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: testpass
+      POSTGRES_DB: crypto_news
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    container_name: zookeeper
+    restart: always
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    container_name: kafka
+    restart: always
+    depends_on:
+      - zookeeper
+    ports:
+      - "9093:9093"
+    environment:
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9093
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9093
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+
+  crawler:
+    build:
+      context: ./Crypto-Crawler
+    container_name: crypto_crawler
+    restart: always
+    depends_on:
+      - postgres
+      - kafka
+    environment:
+      DATABASE_URL: postgres://postgres:testpass@crypto_postgres:5432/crypto_news
+      KAFKA_BROKER_URL: kafka:9093
+    command: >
+      sh -c "
+      until pg_isready -h crypto_postgres -p 5432 -U postgres; do
+        echo 'Waiting for Postgres...';
+        sleep 3;
+      done;
+      python generateDB.py &&
+      python main.py &&
+      python sentiment.py &&
+      python poller.py
+      "
+    volumes:
+      - shared_data:/tmp
+
+  backend:
+    build:
+      context: ./Crypto-Backend
+    container_name: crypto_backend
+    restart: always
+    depends_on:
+      - crawler
+    ports:
+      - "8004:8000"  # Expose backend on port 8004
+    environment:
+      DATABASE_URL: postgres://postgres:testpass@crypto_postgres:5432/crypto_news
+    volumes:
+      - shared_data:/tmp
+
+  frontend:
+    build:
+      context: ./Crypto-Frontend
+    container_name: crypto_frontend
+    restart: always
+    ports:
+      - "3003:3000"  # Expose frontend on port 3003
+
+volumes:
+  postgres_data:
+  shared_data:

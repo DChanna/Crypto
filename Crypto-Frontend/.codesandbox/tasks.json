@@ -12,7 +12,10 @@
     "start": {
       "name": "start",
       "command": "npm run start",
-      "runAtStart": true
+      "runAtStart": true,
+      "preview": {
+        "port": 3003
+      }
     },
     "build": {
       "name": "build",
@@ -30,7 +33,7 @@
       "name": "start-json-server",
       "command": "npm run start-json-server",
       "preview": {
-        "port": 3001
+        "port": 3004
       }
     }
   }

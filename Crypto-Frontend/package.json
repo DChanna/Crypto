@@ -34,7 +34,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "start-json-server": "json-server --watch src/mock-data/data.json --port 3000 --host localhost"
+    "start-json-server": "json-server --watch src/mock-data/data.json --port 3004 --host localhost"
   },
   "eslintConfig": {
     "extends": [

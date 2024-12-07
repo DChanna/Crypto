@@ -18,7 +18,7 @@ const trendingSocialPosts = ({ data }) => {
     >
       <CardContent>
         <Typography variant="h6" sx={{ marginBottom: 1, fontWeight: "bold" }}>
-          Trending Social Posts
+        Social Media (% Fluctuation vs Prev. Day)
         </Typography>
         <Box sx={{ display: "flex", alignItems: "center" }}>
           <Typography

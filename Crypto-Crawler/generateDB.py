@@ -184,22 +184,16 @@ def create_sample_data(db_config):
 if __name__ == "__main__":
     from dataclasses import dataclass
 
-
     @dataclass
     class DBConfig:
-        # Values for port, user, and password need to be personalized - **EDIT**
-        host: str = "localhost"
-        port: int = 5431
+        host: str = "postgres"  
+        port: int = 5432 
         database: str = "crypto_news"
         user: str = "postgres"
         password: str = "testpass"
-
 
     config = DBConfig()
 
     # Create database and tables first
     create_database(config)
     setup_tables(config)
-
-    # Then create sample data
-    # create_sample_data(config)
