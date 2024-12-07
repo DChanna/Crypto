@@ -4,6 +4,10 @@ from kafka import KafkaConsumer
 import handlers
 import signal
 import sys
+import six
+if sys.version_info >= (3, 12, 0):
+    sys.modules['kafka.vendor.six.moves'] = six.moves
+
 
 
 def deserialize(message_bytes):
@@ -128,7 +132,7 @@ def main():
         message_handlers = handlers.factory
 
         poller = KafkaPoller(
-            bootstrap_servers="localhost:9092",
+            bootstrap_servers="kafka:9093",
             topics=topics,
             group_id="my-consumer-group",
             message_handlers=message_handlers,

@@ -13,4 +13,4 @@ COPY ./requirements.txt /app
 RUN pip install -r requirements.txt
 
 # Run scripts in order and create completion marker
-CMD ["sh", "-c", "python generateDB.py && python main.py && python sentiment.py && python poller.py && touch /tmp/crawler_done"]
+CMD ["sh", "-c", "python generateDB.py && python main.py && python crypto-data-generator-2.py && python sentiment.py && python poller.py && touch /tmp/crawler_done"]
