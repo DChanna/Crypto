@@ -5,6 +5,8 @@ WORKDIR /app
 # Install PostgreSQL client tools
 RUN apt-get update && apt-get install -y postgresql-client && rm -rf /var/lib/apt/lists/*
 
+RUN apt-get update && apt-get install -y netcat-openbsd
+
 # Copy the crawler scripts
 COPY . /app
 
@@ -12,5 +14,4 @@ COPY . /app
 COPY ./requirements.txt /app
 RUN pip install -r requirements.txt
 
-# Run scripts in order and create completion marker
-CMD ["sh", "-c", "python generateDB.py && python crypto-data-generator-2.py && python main.py && python poller.py"]
+RUN python -m nltk.downloader vader_lexicon

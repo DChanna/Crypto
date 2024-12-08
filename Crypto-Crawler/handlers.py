@@ -18,7 +18,7 @@ from psycopg2.extras import RealDictCursor
 #     password: str = "testpass"
 
 @dataclass
-    class DBConfig:
+class DBConfig:
         host: str = "postgres"  
         port: int = 5432 
         database: str = "crypto_news"

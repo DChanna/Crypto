@@ -16,7 +16,7 @@ if sys.version_info >= (3, 12, 0):
 
 
 # Kafka Connection Settings
-BOOTSTRAP_SERVERS = ["kafka:9093"]
+BOOTSTRAP_SERVERS = ["kafka:29092"]
 
 # def create_kafka_producer():
 #     print("Creating Kafka producer...")

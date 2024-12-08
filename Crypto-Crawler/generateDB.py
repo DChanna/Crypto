@@ -186,7 +186,7 @@ if __name__ == "__main__":
 
     @dataclass
     class DBConfig:
-        host: str = "postgres"  
+        host: str = "crypto_postgres"  
         port: int = 5432 
         database: str = "crypto_news"
         user: str = "postgres"

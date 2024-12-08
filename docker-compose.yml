@@ -1,98 +1,127 @@
 version: "3.8"
 
 services:
-  postgres:
-    image: postgres:15
-    container_name: crypto_postgres
-    restart: always
-    ports:
-      - "5432:5432"
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: testpass
-      POSTGRES_DB: crypto_news
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
+    postgres:
+        image: postgres:15
+        container_name: crypto_postgres
+        restart: always
+        ports:
+            - "5432:5432"
+        environment:
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: testpass
+            POSTGRES_DB: crypto_news
+        volumes:
+            - postgres_data:/var/lib/postgresql/data
 
-  zookeeper:
-    image: wurstmeister/zookeeper
-    container_name: zookeeper
-    restart: always
-    environment:
-      ZOOKEEPER_CLIENT_PORT: 2181
-      ZOOKEEPER_TICK_TIME: 2000
+    zookeeper:
+        image: confluentinc/cp-zookeeper:latest
+        container_name: zookeeper
+        restart: always
+        environment:
+            ZOOKEEPER_CLIENT_PORT: 2181
+            ZOOKEEPER_TICK_TIME: 2000
 
-  kafka:
-    image: wurstmeister/kafka
-    container_name: kafka
-    restart: always
-    depends_on:
-      - zookeeper
-    ports:
-      - "9093:9093"
-    environment:
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9093,PLAINTEXT_HOST://kafka:9093
-      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9093,PLAINTEXT_HOST://0.0.0.0:9094
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
-      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    kafka:
+        image: confluentinc/cp-kafka:latest
+        container_name: kafka
+        restart: always
+        depends_on:
+            - zookeeper
+        ports:
+            - "9092:9092"
+        environment:
+            KAFKA_BROKER_ID: 1
+            KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+            KAFKA_ADVERTISED_LISTENERS: PLAINTEXT_HOST://localhost:9092,PLAINTEXT://kafka:29092
+            KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+            KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+            KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
 
-  crawler:
-    build:
-      context: ./Crypto-Crawler
-    container_name: crypto_crawler
-    restart: always
-    depends_on:
-      - postgres
-      - kafka
-    environment:
-      DATABASE_URL: postgres://postgres:testpass@crypto_postgres:5432/crypto_news
-      KAFKA_BROKER_URL: kafka:9093
-    command: >
-      sh -c "
-      until pg_isready -h crypto_postgres -p 5432 -U postgres; do
-        echo 'Waiting for Postgres...';
-        sleep 3;
-      done;
-      python generateDB.py &&
-      python crypto-data-generator-2.py &&
-      python main.py &&
-      python poller.py
-      "
-    volumes:
-      - shared_data:/tmp
+    main_crawler:
+        build:
+            context: ./Crypto-Crawler
+        container_name: main_crawler
+        depends_on:
+            - postgres
+            - kafka
+        environment:
+            DATABASE_URL: postgres://postgres:testpass@crypto_postgres:5432/crypto_news
+            KAFKA_BROKER_URL: kafka:29092
+        command: >
+            sh -c "
+              until pg_isready -h crypto_postgres -p 5432 -U postgres; do
+                echo 'Waiting for Postgres...';
+                sleep 3;
+              done;
+              until nc -z kafka 29092; do
+                echo 'Waiting for Kafka to be ready...';
+                sleep 5;
+              done;
+              echo 'Kafka is ready!';
+              python generateDB.py
+              python main.py
+            "
+        volumes:
+            - shared_data:/tmp
 
-  backend:
-    build:
-      context: ./Crypto-Backend
-    container_name: crypto_backend
-    restart: always
-    depends_on:
-      - crawler
-    ports:
-      - "8004:8004"
-    environment:
-      DATABASE_URL: postgresql://postgres:testpass@crypto_postgres:5432/crypto_news
-    volumes:
-      - shared_data:/tmp
+    poller_crawler:
+        build:
+            context: ./Crypto-Crawler
+        container_name: poller_crawler
+        depends_on:
+            - postgres
+            - kafka
+        environment:
+            DATABASE_URL: postgres://postgres:testpass@crypto_postgres:5432/crypto_news
+            KAFKA_BROKER_URL: kafka:29092
+        command: >
+            sh -c "
+              until pg_isready -h crypto_postgres -p 5432 -U postgres; do
+                echo 'Waiting for Postgres...';
+                sleep 3;
+              done;
+              until nc -z kafka 29092; do
+                echo 'Waiting for Kafka to be ready...';
+                sleep 5;
+              done;
+              echo 'Kafka is ready!';
+              python poller.py
+            "
+        volumes:
+            - shared_data:/tmp
 
-  frontend:
-    build:
-      context: ./Crypto-Frontend
-      args:
-        - REACT_APP_API_URL=http://localhost:8004/api
-    container_name: crypto_frontend
-    restart: always
-    ports:
-      - "3003:3000"
-    depends_on:
-      - backend
+    backend:
+        build:
+            context: ./Crypto-Backend
+        container_name: crypto_backend
+        restart: always
+        depends_on:
+            - main_crawler
+            - poller_crawler
+        ports:
+            - "8004:8004"
+        environment:
+            DATABASE_URL: postgresql://postgres:testpass@crypto_postgres:5432/crypto_news
+        volumes:
+            - shared_data:/tmp
+
+    frontend:
+        build:
+            context: ./Crypto-Frontend
+            args:
+                - REACT_APP_API_URL=http://localhost:8004/api
+        container_name: crypto_frontend
+        restart: always
+        ports:
+            - "3003:3000"
+        depends_on:
+            - backend
 
 volumes:
-  postgres_data:
-  shared_data:
+    postgres_data:
+    shared_data:
 
 networks:
-  default:
-    name: crypto_network
+    default:
+        name: crypto_network
